@@ -1,0 +1,35 @@
+
+> xdmfs-agility@0.1.0 check
+> npm run lint && npm run format:check && npm run typecheck && npm test && npm run build
+
+
+> xdmfs-agility@0.1.0 lint
+> eslint .
+
+
+> xdmfs-agility@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> xdmfs-agility@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> xdmfs-agility@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 C:/Users/matth/EFREI-WORKSPACE/M1/renforcement-web/T4l1-M1-XDMFS-Agility
+
+
+ Test Files  12 passed (12)
+      Tests  181 passed (181)
+   Start at  11:32:38
+   Duration  11.32s (transform 5.68s, setup 0ms, import 47.81s, tests 4.53s, environment 3ms)
+
+
+> xdmfs-agility@0.1.0 build
+> tsc -p tsconfig.build.json
+

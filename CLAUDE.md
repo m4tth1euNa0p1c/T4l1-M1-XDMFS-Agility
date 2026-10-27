@@ -4,56 +4,57 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-XDMFS Agility is an EFREI M1 course project: a chatbot web app that will improve traceability across Jira, GitHub and SonarQube. It has two strictly separated parts:
+XDMFS Agility is an EFREI M1 course project: a chatbot that answers Agile traceability questions across Jira, GitHub, SonarQube and deployments. Two strictly separated parts:
 
-- **A. Academic Chatbot Core**: plain HTML/CSS/JavaScript in `public/`, graded by an automatic checker. It must work with no server and no AI API.
-- **B. XDMFS Agentic Platform**: everything in `src/` (LLM providers, MCP connectors, traceability engine, memory). B must never break A, and A must never import from B.
+- **Academic core** in `public/index.html`, `public/css/style.css` and `public/js/`. These are classic browser scripts with no modules, so the page works from `file://` with no server and no AI. It is graded by an automatic checker.
+- **Platform** in `src/`, written in TypeScript for Node 20. It holds the API, the dashboard backend, the LLM agent, connectors, the MCP server and SQLite memory. The dashboard UI lives in `public/tracabilite/` and calls the API.
 
-The course requirements take precedence over any architectural preference.
+`public/` never imports from `src/`. The course contract wins over any architecture preference.
 
-## Current state
+## Commands
 
-As of 2026-10-27 the remote repository is empty. No `package.json`, tests, CI or source code exist yet. Update this file whenever commands or structure become real. Do not document a command here until it has actually run.
+```bash
+npm run dev                 # API + static pages on http://127.0.0.1:3000 (tsx)
+npm run check               # lint, prettier check, typecheck, all mocked tests, build
+npm test                    # vitest: academic, unit, integration, contracts
+npm run test:academic       # J1 contract only
+npx vitest run tests/unit/traceability.test.ts -t "Q6"   # single file / test name
+npm run test:e2e            # Playwright, starts its own server on :3100 (LLM off)
+npm run test:live           # real Anthropic/GitHub/SonarQube calls, local only, needs .env
+npm run mcp                 # MCP stdio server (also declared in .mcp.json)
+```
 
-## Authoritative course documents
+For live GitHub checks, run `GITHUB_TOKEN=$(gh auth token) npm run test:live`. Start the local SonarQube with `docker compose -f docker/docker-compose.sonarqube.yml up -d`, then follow `docs/runbooks/sonarqube.md`.
 
-`CONTRAT.md`, `VARIANTE.md`, `J1-apres-midi_md.pdf` and the J2 to J4 instructions define the graded contract. **None of them are in the repository or the local workspace yet.** Ask for them before finalizing anything in Part A. Never invent their content. When they arrive, the exact IDs, file paths and function signatures in `CONTRAT.md` override everything below.
+## Architecture
 
-Known J1 contract, as stated by the project owner (verify against `CONTRAT.md`):
+- **One snapshot format feeds everything.** Connectors and the demo both produce a `SyncSnapshot` (`src/traceability/snapshot.ts`). `buildGraph` (`builder.ts`) turns it into a `TraceGraph`. `SqliteTraceStore.saveSnapshot` persists it with upsert, stale marking and a sync cursor. `loadGraph` rebuilds it for queries.
+- **Evidence model** (`model.ts`):
+  - `verified` needs a method in `VERIFYING_METHODS`, evidence, and confidence 1.
+  - Issue-key conventions in branches, commits and PR titles are always `inferred`.
+  - A path takes the status of its weakest link.
+  - These rules are enforced by zod and by SQLite CHECK constraints.
+- **Questions** (`questions.ts`) return `{ data, sources, limitations, demo }`. `src/assistant/tools.ts` wraps them as `traceability_*` tools. The same tools are used by:
+  - the deterministic router (`router.ts`),
+  - the Claude agent loop (`agent.ts`),
+  - the MCP server (`src/mcp/server.ts`),
+  - `GET /api/projects/:id/tools/:name`.
+- **`POST /api/projects/:id/ask`** uses the LLM when a provider is configured. In `auto` mode it falls back to the deterministic router on error.
+- **Providers** implement `LLMProvider` (`src/providers/types.ts`). Anthropic is verified live. Bedrock and Azure are mocked only and say so in `capabilities()`. `createProviderFromEnv` returns null when nothing is configured.
+- **Connectors** extend `ReadOnlyHttpClient`, which is GET-only and requires https outside localhost. MCP registers `jira_*` and `sonarqube_*` only when they are configured. Tool names use underscores, never dots.
+- **Demo data:** the fictional bank project in `src/demo/bank-project.ts` is seeded at server start. Each scenario in it backs a test in `tests/unit/traceability.test.ts`.
 
-- `public/index.html`: `main`, `h1`, `ul#historique` with `aria-live`, `form#formulaire`, `#message` (`required`, `maxlength`), button `#envoyer`. Bonus: skip link to `#contenu`.
-- `public/css/style.css`: responsive 360 to 1280 px, text contrast at least 4.5:1, visible keyboard focus, 200-character unbroken words must wrap. Bonus: dark theme.
-- `brain.js`: pure functions `validerMessage(texte, limite)` and `repondre(texte, regles, assistant)`. No DOM access, deterministic, unit tested. Bonus: case- and accent-insensitive matching.
-- `app.js`: the only file that touches the DOM. Send on click and Enter, render `li.msg` with `data-role="user"` or `data-role="bot"`, update `#statut` and `#compteur`. Bonus: `#effacer`.
-- `NOTES.md`: answers why `brain.js` avoids the DOM, the full path of a message, and which test was useful. Only cite tests that were actually run.
+## Rules
 
-The exact locations of `brain.js` and `app.js` are imposed by the contract. Do not move academic files to fit the target layout of Part B.
+- The course documents (`CONTRAT.md`, `VARIANTE.md`, `J1-apres-midi_md.pdf`) are not in the repo yet. The assumed contract is in `docs/academic/contract-assumptions.md`. Never invent their content.
+- Never rename the academic ids or classes, and keep `brain.js` pure. Path-scoped rules live in `.claude/rules/`.
+- Render with `textContent`, never `innerHTML`. The CSP is `default-src 'self'`, so there are no CDNs and no inline scripts.
+- Secrets live in `.env`, which is gitignored. Read variable names only and pass upstream errors through `redact()`.
+- Schema changes are new entries in `src/memory/migrations.ts`.
+- Never claim an integration works without a passing live test recorded in `docs/evidence/`.
+- Git: work on `feature/*` branches and merge to `main` by pull request. Use Conventional Commits. Never merge without authorization.
 
-## Part B design rules
+## Factory
 
-- **LLM providers** implement one `LLMProvider` interface (`generate`, optional `stream`, `capabilities`). Anthropic is the first real adapter. AWS Bedrock and Azure AI Foundry get dedicated adapters, since their tool-calling and streaming capabilities differ. A provider counts as operational only after a real call succeeds.
-- **MCP connectors** wrap the official REST APIs of GitHub, Jira and SonarQube behind a local MCP server. Tool names such as `github.list_pull_requests` or `traceability.get_issue_delivery_chain` are proposed contracts, not existing APIs. Connectors are read-only by default. Any external mutation needs explicit authorization.
-- **Traceability graph** links Issue, Branch, Commit, PullRequest, Build, QualityGate, Deployment and Release. Every edge records its source, source and target IDs, observation date, correlation method, confidence and a verifiable reference. Edges are `verified`, `inferred` or `unknown`. Never promote an inferred edge to verified. A green workflow is not a deployment, and a passing SonarQube analysis is not functional validation.
-- **Persistence** uses SQLite behind a replaceable storage interface, with versioned migrations, provenance, cache TTLs and deduplication. No vector or graph database without a demonstrated need.
-- Jira, SonarQube, Bedrock and Azure must not be described as working unless they are configured and tested.
-
-## Secrets
-
-- Only read the names of environment variables, never their values. Never print, log or commit them.
-- The developer keeps a `.env` one level above the repo, outside version control. Its current key name uses hyphens, which is not a valid shell variable name. The app should read `ANTHROPIC_API_KEY`, documented in `.env.example` with a placeholder.
-- `.env` and all secret files must stay in `.gitignore`.
-- Do not reuse Claude Code's own credentials as application credentials.
-
-## Workflow
-
-- Development cycle: Requirement, Specification, Design, Implementation, Test, Evidence, Review. Each task gets an ID, a spec with acceptance criteria, a test strategy, observed results and remaining limitations.
-- Specs live in `specs/`, reusable templates in `templates/`, ADRs in `docs/adr/`, test evidence in `docs/evidence/`.
-- Claude Code agents, skills and commands live in `.claude/agents/`, `.claude/skills/<name>/SKILL.md` and `.claude/commands/`. Use only frontmatter fields supported by the installed Claude Code version.
-- Every claim that something works must be backed by a reproducible command and its output.
-
-## Git
-
-- `main` gets a minimal working skeleton first. Feature work happens on branches such as `feature/agentic-factory-bootstrap`, merged through a pull request after validation.
-- Never push unvalidated experimental code directly to `main`. Never merge without authorization.
-- Commit messages follow Conventional Commits, for example `feat: implement deterministic chatbot`.
-- CI must not depend on a paid API for the academic tests. Use minimal GitHub Actions permissions and pinned third-party actions.
+- Agents live in `.claude/agents/` and skills in `.claude/skills/`. Use the `spec-driven-development` skill for features.
+- Specs go in `specs/`, templates in `templates/`, ADRs in `docs/adr/` and evidence in `docs/evidence/`.

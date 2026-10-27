@@ -1,0 +1,23 @@
+
+Running 18 tests using 2 workers
+
+  ✓   2 [mobile-360] › tests\e2e\app.spec.ts:4:3 › Chatbot académique J1 › envoi au clic et à Entrée, compteur, effacer (3.1s)
+  ✓   1 [desktop-1280] › tests\e2e\app.spec.ts:4:3 › Chatbot académique J1 › envoi au clic et à Entrée, compteur, effacer (3.1s)
+  ✓   4 [desktop-1280] › tests\e2e\app.spec.ts:23:3 › Chatbot académique J1 › message vide refusé et annoncé (1.2s)
+  ✓   3 [mobile-360] › tests\e2e\app.spec.ts:23:3 › Chatbot académique J1 › message vide refusé et annoncé (1.3s)
+  ✓   5 [mobile-360] › tests\e2e\app.spec.ts:30:3 › Chatbot académique J1 › un mot de 200 caractères ne déborde pas horizontalement (857ms)
+  ✓   6 [desktop-1280] › tests\e2e\app.spec.ts:30:3 › Chatbot académique J1 › un mot de 200 caractères ne déborde pas horizontalement (900ms)
+  ✓   7 [mobile-360] › tests\e2e\app.spec.ts:40:3 › Chatbot académique J1 › navigation clavier : lien d'évitement puis champ (521ms)
+  ✓   8 [desktop-1280] › tests\e2e\app.spec.ts:40:3 › Chatbot académique J1 › navigation clavier : lien d'évitement puis champ (750ms)
+  ✓   9 [mobile-360] › tests\e2e\app.spec.ts:48:3 › Chatbot académique J1 › aucune erreur console ni requête externe (787ms)
+  ✓  10 [desktop-1280] › tests\e2e\app.spec.ts:48:3 › Chatbot académique J1 › aucune erreur console ni requête externe (830ms)
+  ✓  11 [mobile-360] › tests\e2e\app.spec.ts:65:3 › Tableau de traçabilité › charge le projet bancaire de démonstration (1.2s)
+  ✓  12 [desktop-1280] › tests\e2e\app.spec.ts:65:3 › Tableau de traçabilité › charge le projet bancaire de démonstration (1.2s)
+  ✓  13 [mobile-360] › tests\e2e\app.spec.ts:78:3 › Tableau de traçabilité › affiche la chaîne de livraison et les manques (1.2s)
+  ✓  14 [desktop-1280] › tests\e2e\app.spec.ts:78:3 › Tableau de traçabilité › affiche la chaîne de livraison et les manques (1.4s)
+  ✓  15 [mobile-360] › tests\e2e\app.spec.ts:88:3 › Tableau de traçabilité › l'assistant répond avec sources et limites (1.2s)
+  ✓  16 [desktop-1280] › tests\e2e\app.spec.ts:88:3 › Tableau de traçabilité › l'assistant répond avec sources et limites (1.3s)
+  ✓  17 [mobile-360] › tests\e2e\app.spec.ts:99:3 › Tableau de traçabilité › pas de défilement horizontal de la page (763ms)
+  ✓  18 [desktop-1280] › tests\e2e\app.spec.ts:99:3 › Tableau de traçabilité › pas de défilement horizontal de la page (588ms)
+
+  18 passed (34.6s)

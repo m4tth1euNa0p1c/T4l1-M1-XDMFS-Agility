@@ -1,0 +1,18 @@
+
+ RUN  v4.1.12 C:/Users/matth/EFREI-WORKSPACE/M1/renforcement-web/T4l1-M1-XDMFS-Agility
+      Coverage enabled with v8
+
+
+ Test Files  12 passed (12)
+      Tests  181 passed (181)
+   Start at  11:33:55
+   Duration  10.12s (transform 3.57s, setup 0ms, import 35.49s, tests 2.86s, environment 2ms)
+
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 82.51% ( 1203/1458 )
+Branches     : 69.42% ( 781/1125 )
+Functions    : 83.18% ( 287/345 )
+Lines        : 84.23% ( 1095/1300 )
+================================================================================

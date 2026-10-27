@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Tableau de traçabilité Agile XDMFS : tickets, pull requests, CI, SonarQube et déploiements."
+    />
+    <title>XDMFS Agility - Tableau de traçabilité</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#principal">Aller au contenu principal</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true">X</span>
+        <div>
+          <p class="brand-name">XDMFS Agility</p>
+          <p class="brand-sub">Audit &amp; traçabilité</p>
+        </div>
+      </div>
+      <label class="project-picker">
+        <span class="visually-hidden">Projet</span>
+        <select id="projet"></select>
+      </label>
+      <p id="badge-demo" class="badge badge-demo" hidden>Données de démonstration fictives</p>
+      <nav class="top-links" aria-label="Liens">
+        <a href="../index.html">Chatbot J1</a>
+        <span id="badge-llm" class="badge badge-neutral">Mode déterministe</span>
+      </nav>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Sections du tableau de bord">
+        <ul>
+          <li><a href="#kpi">Tableau de bord</a></li>
+          <li><a href="#equipe">Équipe &amp; contributions</a></li>
+          <li><a href="#risques">Risques de release</a></li>
+          <li><a href="#chaine">Chaîne de livraison</a></li>
+          <li><a href="#qualite">Contrôle qualité des PR</a></li>
+          <li><a href="#tickets">Tickets Jira</a></li>
+          <li><a href="#assistant">Assistant</a></li>
+        </ul>
+        <p class="sidebar-note" id="sync-info"></p>
+      </nav>
+
+      <main id="principal" tabindex="-1">
+        <h1 class="visually-hidden">Tableau de traçabilité</h1>
+        <p id="erreur-globale" class="alert" role="alert" hidden></p>
+
+        <section id="kpi" class="kpis" aria-label="Indicateurs clés">
+          <article class="card kpi">
+            <h2 class="kpi-label">Tickets</h2>
+            <p class="kpi-value" id="kpi-tickets">-</p>
+            <p class="kpi-sub" id="kpi-tickets-sub"></p>
+          </article>
+          <article class="card kpi">
+            <h2 class="kpi-label">En production</h2>
+            <p class="kpi-value kpi-ok" id="kpi-prod">-</p>
+            <p class="kpi-sub" id="kpi-prod-sub"></p>
+          </article>
+          <article class="card kpi">
+            <h2 class="kpi-label">Risques de release</h2>
+            <p class="kpi-value kpi-danger" id="kpi-risques">-</p>
+            <p class="kpi-sub" id="kpi-risques-sub"></p>
+          </article>
+          <article class="card kpi">
+            <h2 class="kpi-label">Liens vérifiés / déduits</h2>
+            <p class="kpi-value" id="kpi-liens">-</p>
+            <div class="bar" aria-hidden="true"><span id="kpi-liens-bar"></span></div>
+            <p class="kpi-sub" id="kpi-liens-sub"></p>
+          </article>
+        </section>
+
+        <section id="equipe" class="card" aria-labelledby="titre-equipe">
+          <div class="card-head">
+            <div>
+              <h2 id="titre-equipe">Équipe &amp; contributions</h2>
+              <p class="muted" id="equipe-sub"></p>
+            </div>
+          </div>
+          <ul id="liste-orgs" class="orgs"></ul>
+        </section>
+
+        <section id="risques" class="card" aria-labelledby="titre-risques">
+          <div class="card-head">
+            <h2 id="titre-risques">Risques de release</h2>
+            <span id="risques-compte" class="badge badge-high"></span>
+          </div>
+          <ul id="liste-risques" class="risks"></ul>
+        </section>
+
+        <section id="chaine" class="card" aria-labelledby="titre-chaine">
+          <div class="card-head">
+            <h2 id="titre-chaine">Chaîne de livraison</h2>
+            <label class="inline-field">
+              <span>Ticket</span>
+              <select id="choix-ticket"></select>
+            </label>
+          </div>
+          <p id="chaine-titre" class="chain-title"></p>
+          <ol id="stepper" class="stepper"></ol>
+          <div id="chaine-manques" class="callout" hidden>
+            <h3>Informations manquantes</h3>
+            <ul></ul>
+          </div>
+          <p class="legend">
+            <span class="pill pill-verified">vérifié</span> preuve explicite d'une API ·
+            <span class="pill pill-inferred">déduit</span> clé Jira dans un nom ou un message ·
+            <span class="pill pill-unknown">inconnu</span> aucune preuve
+          </p>
+        </section>
+
+        <section id="qualite" class="card" aria-labelledby="titre-qualite">
+          <div class="card-head">
+            <h2 id="titre-qualite">Pull requests sans contrôle qualité vérifié</h2>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">PR</th>
+                  <th scope="col">Titre</th>
+                  <th scope="col">État</th>
+                  <th scope="col">CI</th>
+                  <th scope="col">SonarQube</th>
+                  <th scope="col">Problèmes</th>
+                </tr>
+              </thead>
+              <tbody id="table-qualite"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tickets" class="card" aria-labelledby="titre-tickets">
+          <div class="card-head">
+            <h2 id="titre-tickets">Tickets Jira</h2>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Clé</th>
+                  <th scope="col">Titre</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Statut</th>
+                  <th scope="col">Sprint</th>
+                  <th scope="col">Livraison</th>
+                </tr>
+              </thead>
+              <tbody id="table-tickets"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside id="assistant" class="assistant" aria-labelledby="titre-assistant">
+        <div class="assistant-head">
+          <h2 id="titre-assistant">Assistant de traçabilité</h2>
+          <p class="muted" id="assistant-mode"></p>
+          <div class="chips" id="suggestions">
+            <button type="button" class="chip">PR sans contrôle qualité</button>
+            <button type="button" class="chip">Changements sans ticket</button>
+            <button type="button" class="chip">Chaîne de PAY-7</button>
+            <button type="button" class="chip">Tickets bloqués par SonarQube</button>
+            <button type="button" class="chip">Qu'est-ce qui est en production ?</button>
+          </div>
+        </div>
+        <ul id="conversation" class="conversation" aria-live="polite"></ul>
+        <form id="form-question" class="ask">
+          <label for="question" class="visually-hidden">Question</label>
+          <input
+            id="question"
+            type="text"
+            maxlength="500"
+            required
+            autocomplete="off"
+            placeholder="Poser une question sur la traçabilité"
+          />
+          <button type="submit" id="envoyer-question" aria-label="Envoyer la question">
+            Envoyer
+          </button>
+        </form>
+        <p id="ask-statut" class="muted small" role="status"></p>
+      </aside>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

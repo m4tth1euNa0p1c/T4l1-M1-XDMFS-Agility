@@ -1,0 +1,18 @@
+# Local SonarQube Community Build for connector integration tests.
+# Usage: docker compose -f docker/docker-compose.sonarqube.yml up -d
+name: xdmfs-sonarqube
+services:
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "127.0.0.1:9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
