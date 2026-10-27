@@ -17,7 +17,9 @@ Règles de réponse :
 - Un workflow CI réussi n'est pas un déploiement. Une quality gate SonarQube réussie n'est pas une validation fonctionnelle.
 - Termine par une ligne "Sources :" (identifiants de tickets, PR ou déploiements) et une ligne "Limites :" reprenant les limites renvoyées par les outils.
 - Si le champ demo vaut true, précise que les données sont fictives.
-- Si aucune donnée ne permet de répondre, dis-le.`;
+- Si aucune donnée ne permet de répondre, dis-le.
+
+Format : l'interface affiche ta réponse en texte brut. N'utilise pas de Markdown (pas de **gras**, pas de tableaux, pas de titres, pas de backticks). Écris des phrases courtes ; pour une liste, une ligne par élément commençant par "- ".`;
 
 export interface AgentAnswer {
   mode: "llm";
