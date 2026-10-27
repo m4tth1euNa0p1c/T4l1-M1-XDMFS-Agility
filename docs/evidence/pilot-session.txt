@@ -1,0 +1,66 @@
+KPI tickets: 18 | mode: LLM : anthropic
+
+=== Q1: Quels tickets sont bloqués par SonarQube ?
+Deux tickets du projet aurore-pay ont une quality gate SonarQube en échec sur leur PR. Les données sont fictives (démo).
+
+- PAY-5, "Plafonds de virement par profil client", statut Terminé. Sa PR est la n°5 (quality gate AYaefa1aa1fb). La couverture du nouveau code est de 54,2 % pour un seuil de 80 %.
+- PAY-7, "Vérification du nom du bénéficiaire", statut En cours. Sa PR est la n°13 (quality gate AY4aa2dbabfd). La couverture du nouveau code est de 71,5 % pour un seuil de 80 %. Les security hotspots revus sont à 0 % pour un seuil de 100 %.
+
+Les deux liens entre ticket et PR sont "inferred" : ils viennent des clés Jira citées dans les branches, commits ou PR. Ils ne sont pas vérifiés.
+
+PAY-5 est marqué Terminé alors que sa quality gate est en échec. C'est un point à vérifier avant la release.
+
+Sources : PAY-5, PAY-7, PR 5, PR 13, quality gates AYaefa1aa1fb et AY4aa2dbabfd.
+Limites : données de démonstration fictives, aucune source réelle interrogée. Les liens entre ticket et code sont "inferred", jamais "verified". Un ticket est compté comme bloqué quand la quality gate du dernier commit de sa PR est en échec.
+Outils :
+issues_blocked_by_quality
+Réponse générée par le LLM (claude-opus-5-5)
+
+=== Q2: Quelle est la chaîne de livraison de PAY-6 et que manque-t-il ?
+PAY-6 (« Notification push de confirmation du virement ») est en statut Terminé mais n'est que partiellement livré en production. Ces données sont fictives (démonstration).
+
+Ticket : assigné à Camille Roux, Sprint 3.
+
+Code (tous les liens sont inferred, déduits de la clé PAY-6 dans les noms et messages) :
+- Branches : feature/PAY-6-notification et feature/PAY-6-son.
+- PR #8 « Notification push de confirmation » : fusionnée (commits a9b651e, a1adbe0, merge fcacf4b).
+- PR #12 « Son de notification configurable » : fusionnée (commit 1b8be12, merge e5a2513).
+
+Contrôles (verified, mais leur rattachement au ticket reste inferred) :
+- Builds CI 9117 et 9127 : réussis. Un build CI réussi ne prouve pas un déploiement.
+- Quality gates SonarQube OK sur pr/8, pr/12 et sur main (deux analyses). Elles ne valent pas validation fonctionnelle.
+
+Déploiements :
+- Staging : 705 (09/10), 706 (16/10) et 709 (21/10), tous réussis.
+- Production : 707 (19/10 à 07h00) en échec, puis 708 (19/10 à 12h00) réussi.
+
+Ce qui manque :
+- Les commits 1b8be12 et e5a2513, ceux de la PR #12 sur le son de notification, ne sont pas encore en production. Le ticket est donc marqué Terminé alors que la livraison n'est que partielle.
+- Aucun lien verified entre PAY-6 et le code. Tout le rattachement repose sur la clé citée dans les branches, les commits et les PR.
+
+Sources : PAY-6, PR #8, PR #12, builds 9117 et 9127, quality gates AYd648e1a5cc et AY393e5fc138, déploiements 705, 706, 707, 708 et 709.
+Limites : ce sont des données de démonstration fictives, aucune source réelle n'a été interrogée. Les liens entre ticket et code sont inferred, jamais verified. Chaque étape hérite du statut de son lien le plus faible avec le ticket.
+Outils :
+get_issue_delivery_chain
+Réponse générée par le LLM (claude-opus-5-5)
+
+=== Q3: Quels changements partent en production sans ticket ?
+Deux commits sans ticket Jira sont déjà en production sur le projet aurore-pay :
+- 434f9a6 "chore: initialise le dépôt Aurore Pay" (a.martin)
+- 4bcc099 "chore: mise à jour des dépendances" (m.leroy)
+
+D'autres changements sans ticket ne sont pas encore en production :
+- PR 15 "Mise à jour de la configuration ESLint" (camille-r). Les données ne disent pas si elle a été déployée.
+- Commit 4db0751 "chore: règles ESLint du front" (camille-r).
+
+Ces données sont fictives (démonstration).
+
+Sources : commit 434f9a6, commit 4bcc099, commit 4db0751, PR 15
+Limites : données de démonstration fictives, aucune source réelle interrogée. Les liens entre ticket et code viennent uniquement des clés Jira citées dans les branches, commits et PR. Ils sont donc déduits, jamais vérifiés. Un changement classé "sans ticket" peut donc simplement ne pas citer sa clé. Les commits de merge sont exclus, car ils reprennent les tickets de leur PR.
+Outils :
+changes_without_ticket
+Réponse générée par le LLM (claude-opus-5-5)
+
+=== Chatbot J1: Bonjour, je suis Agilo, l'assistant de traçabilité XDMFS Agility. Tapez « aide » pour commencer.
+
+Console errors: none
