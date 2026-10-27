@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="XDMFS Agility : assistant de traçabilité Agile entre Jira, GitHub et SonarQube."
+    />
+    <title>XDMFS Agility - Assistant de traçabilité</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="lien-evitement" href="#contenu">Aller au contenu principal</a>
+
+    <main id="contenu" tabindex="-1">
+      <header class="entete">
+        <h1>XDMFS Agility</h1>
+        <p class="sous-titre">
+          Assistant de traçabilité Agile : tickets Jira, commits GitHub, analyses SonarQube.
+        </p>
+        <p class="lien-tableau">
+          <a href="tracabilite/">Ouvrir le tableau de traçabilité</a> (nécessite le serveur)
+        </p>
+      </header>
+
+      <section class="conversation" aria-labelledby="titre-historique">
+        <h2 id="titre-historique" class="visuellement-masque">Historique de la conversation</h2>
+        <ul id="historique" aria-live="polite" aria-relevant="additions" aria-atomic="false"></ul>
+      </section>
+
+      <form id="formulaire" novalidate>
+        <label for="message">Votre message</label>
+        <div class="zone-saisie">
+          <input
+            id="message"
+            name="message"
+            type="text"
+            required
+            maxlength="200"
+            autocomplete="off"
+            aria-describedby="compteur statut"
+            placeholder="Ex. : Quels tickets sont liés à cette PR ?"
+          />
+          <button id="envoyer" type="submit">Envoyer</button>
+        </div>
+        <div class="infos-saisie">
+          <p id="compteur" aria-live="off">0 / 200</p>
+          <button id="effacer" type="button" class="bouton-secondaire">
+            Effacer la conversation
+          </button>
+        </div>
+        <p id="statut" role="status" aria-live="polite"></p>
+      </form>
+    </main>
+
+    <script src="js/regles.js"></script>
+    <script src="js/brain.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

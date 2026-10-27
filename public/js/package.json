@@ -1,0 +1,4 @@
+{
+  "//": "Les scripts du chatbot académique sont des scripts navigateur classiques. Ce fichier permet à Node de les charger en CommonJS (require) pour les tests, alors que le reste du dépôt est en modules ES.",
+  "type": "commonjs"
+}

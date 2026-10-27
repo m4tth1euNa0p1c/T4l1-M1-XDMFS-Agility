@@ -1,0 +1,292 @@
+/*
+ * style.css - XDMFS Agility (J1-02)
+ * Responsive 360-1280 px, contraste >= 4.5:1, focus visible, thème sombre.
+ * Les couples de couleurs texte/fond sont vérifiés par tests/academic/css.test.ts.
+ */
+
+:root {
+  color-scheme: light;
+  --fond: #ffffff;
+  --surface: #f3f5f8;
+  --texte: #1b1f24;
+  --texte-attenue: #4a5462;
+  --bordure: #6b7480;
+  --primaire: #0b57a4;
+  --sur-primaire: #ffffff;
+  --bulle-bot: #e8edf3;
+  --sur-bulle-bot: #1b1f24;
+  --bulle-user: #0b57a4;
+  --sur-bulle-user: #ffffff;
+  --erreur: #b02a20;
+  --avertissement: #8a4b00;
+  --focus: #c2410c;
+  --rayon: 0.75rem;
+  --espace: clamp(0.75rem, 2.5vw, 1.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --fond: #121519;
+    --surface: #1c2128;
+    --texte: #e8ebef;
+    --texte-attenue: #aeb6c0;
+    --bordure: #8a94a0;
+    --primaire: #8cb8f0;
+    --sur-primaire: #0c1a2b;
+    --bulle-bot: #262d36;
+    --sur-bulle-bot: #e8ebef;
+    --bulle-user: #8cb8f0;
+    --sur-bulle-user: #0c1a2b;
+    --erreur: #ff9a90;
+    --avertissement: #f5c26b;
+    --focus: #ffb380;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--fond);
+  color: var(--texte);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  line-height: 1.5;
+}
+
+.visuellement-masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lien-evitement {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--primaire);
+  color: var(--sur-primaire);
+  border-radius: var(--rayon);
+  transform: translateY(-200%);
+}
+
+.lien-evitement:focus {
+  transform: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace);
+  width: 100%;
+  max-width: 50rem;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: var(--espace);
+}
+
+main:focus {
+  outline: none;
+}
+
+.entete h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  line-height: 1.2;
+}
+
+.sous-titre {
+  margin: 0.25rem 0 0;
+  color: var(--texte-attenue);
+}
+
+.lien-tableau {
+  margin: 0.25rem 0 0;
+  color: var(--texte-attenue);
+}
+
+.lien-tableau a {
+  color: var(--primaire);
+  font-weight: 600;
+}
+
+.conversation {
+  flex: 1;
+  min-height: 12rem;
+  padding: var(--espace);
+  background: var(--surface);
+  border-radius: var(--rayon);
+}
+
+#historique {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#historique:empty::before {
+  content: "Aucun message pour l'instant. Écrivez « bonjour » pour commencer.";
+  color: var(--texte-attenue);
+}
+
+.msg {
+  max-width: min(85%, 36rem);
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--rayon);
+  /* Les mots de 200 caractères sans espace passent à la ligne. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.msg[data-role="user"] {
+  align-self: flex-end;
+  background: var(--bulle-user);
+  color: var(--sur-bulle-user);
+  border-bottom-right-radius: 0.25rem;
+}
+
+.msg[data-role="bot"] {
+  align-self: flex-start;
+  background: var(--bulle-bot);
+  color: var(--sur-bulle-bot);
+  border-bottom-left-radius: 0.25rem;
+}
+
+#formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#formulaire label {
+  font-weight: 600;
+}
+
+.zone-saisie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#message {
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: var(--texte);
+  background: var(--fond);
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+}
+
+#message[aria-invalid="true"] {
+  border-color: var(--erreur);
+}
+
+button {
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--rayon);
+}
+
+#envoyer {
+  flex: 0 0 auto;
+  color: var(--sur-primaire);
+  background: var(--primaire);
+  border: 2px solid var(--primaire);
+}
+
+#envoyer:hover {
+  filter: brightness(1.1);
+}
+
+.bouton-secondaire {
+  color: var(--primaire);
+  background: transparent;
+  border: 2px solid var(--primaire);
+}
+
+.infos-saisie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+#compteur {
+  margin: 0;
+  color: var(--texte-attenue);
+  font-variant-numeric: tabular-nums;
+}
+
+#compteur.proche-limite {
+  color: var(--avertissement);
+  font-weight: 600;
+}
+
+#statut {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--texte-attenue);
+}
+
+#statut.erreur {
+  color: var(--erreur);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  #envoyer,
+  .bouton-secondaire {
+    flex: 1 1 100%;
+  }
+
+  .msg {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
